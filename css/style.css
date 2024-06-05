@@ -1,0 +1,35 @@
+.theme--light.v-application {
+    background: transparent;
+}
+
+.v-input--selection-controls__input:hover .v-input--selection-controls__ripple:before {
+    background: transparent;
+}
+
+/* disable Blocksy css */
+.container select,.container textarea,.container input[type=url],.container input[type=tel],.container input[type=text],.container input[type=time],.container input[type=date],.container input[type=datetime],.container input[type=datetime-local],.container input[type=email],.container input[type=number],.container input[type=search],.container input[type=password],.container fieldset .wc-stripe-elements-field,.ff-inherit-theme-style .ff-el-form-control:not([size]):not([multiple]) {
+    padding: 0px;
+    border-width: 0px;
+    border-style: none;
+}
+
+body {
+    background-repeat: repeat;
+}
+
+[v-cloak] > * {
+    display:none;
+}
+[v-cloak]::before {
+    display: block;
+    position: relative;
+    left: 0%;
+    top: 0%;
+    max-width: 1000px;
+    margin:auto;
+    padding-bottom: 10em;
+}
+
+.token input[type=text] {
+    font-size: 14px;
+}
