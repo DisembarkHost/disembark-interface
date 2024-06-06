@@ -35,10 +35,7 @@
     </v-card>
     <v-alert outlined type="success" text v-if="backup_token != '' && files_progress.copied == files_progress.total">
       Backup is ready. You can generate a zip file locally use the following commands in your terminal.
-        <pre style="font-size: 11px;color: var(--theme-palette-color-1);margin: 14px 14px 0px 0px;background: var(--theme-palette-color-2);">url={{ site_url }}
-token={{ token }}
-backup_token={{ backup_token }}
-curl -s https://disembark.host/generate-zip | bash -s -- --url="{{ site_url }}" \
+        <pre style="font-size: 11px;color: var(--theme-palette-color-1);margin: 14px 14px 0px 0px;background: var(--theme-palette-color-2);">curl -s https://disembark.host/generate-zip | bash -s -- --url="{{ site_url }}" \
 --token="{{ token }}" --backup-token="{{ backup_token }}"</pre>
     </v-alert>
     <v-row>
