@@ -60,7 +60,7 @@ class Run {
             return;
         }
         $args = [
-            'timeout'   => 120,
+            'timeout'   => 600,
             'sslverify' => false
         ];
         $backup_token = substr( bin2hex( random_bytes( 20 ) ), 0, -24);
@@ -84,7 +84,7 @@ class Run {
             return;
         }
         $data = [
-			'timeout' => 100,
+			'timeout' => 600,
 			'headers' => [
 				'Content-Type' => 'application/json; charset=utf-8'
             ],
@@ -108,7 +108,7 @@ class Run {
             return;
         }
         $data = [
-			'timeout' => 100,
+			'timeout' => 600,
 			'headers' => [
 				'Content-Type' => 'application/json; charset=utf-8'
             ],
@@ -132,7 +132,7 @@ class Run {
             return;
         }
         $data = [
-			'timeout' => 100,
+			'timeout' => 600,
 			'headers' => [
 				'Content-Type' => 'application/json; charset=utf-8'
             ],
