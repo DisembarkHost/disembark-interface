@@ -33,10 +33,15 @@
     </v-row>
     </v-card-text>
     </v-card>
-    <v-alert outlined type="success" text v-if="backup_token != '' && files_progress.copied == files_progress.total">
+    <div style="opacity:0;"><textarea id="clipboard" style="height:1px;width:10px;display:flex;cursor:default"></textarea></div>
+    <v-alert outlined type="success" text v-if="migrateCommand">
       Backup is ready. You can generate a zip file locally use the following commands in your terminal.
-        <pre style="font-size: 11px;color: var(--theme-palette-color-1);margin: 14px 14px 0px 0px;background: var(--theme-palette-color-2);">curl -s https://disembark.host/generate-zip | bash -s -- --url="{{ site_url }}" \
---token="{{ token }}" --backup-token="{{ backup_token }}"</pre>
+        <pre style="font-size: 11px;color: var(--theme-palette-color-1);margin: 14px 14px 0px 0px;background: var(--theme-palette-color-2);">{{ migrateCommand }}</pre>
+        <div style="position:relative">
+            <v-btn small icon @click="copyText( migrateCommand )" absolute right style="top:-36px" class="mr-2">
+                <v-icon color="var(--theme-palette-color-1)">mdi-content-copy</v-icon> 
+            </v-btn>
+        </div>
     </v-alert>
     <v-row>
         <v-col cols="12" sm="12" md="6" v-if="database.length > 0">
@@ -189,7 +194,16 @@ new Vue({
                 this.files_total = response.data.files.map( file => file.size ).reduce((partialSum, a) => partialSum + a, 0);
                 this.backupDatabase()
 			});
-        }
+        },
+        copyText( value ) {
+			var clipboard = document.getElementById("clipboard");
+			clipboard.value = value;
+			clipboard.focus()
+			clipboard.select()
+			document.execCommand("copy");
+			this.snackbar.message = "Copied to clipboard.";
+			this.snackbar.show = true;
+		},
     },
     mounted() {
         this.$vuetify.theme.themes.light.primary = getComputedStyle(document.documentElement).getPropertyValue('--theme-palette-color-2');
@@ -223,6 +237,14 @@ new Vue({
             bytes = this.database.map(item => item.size).reduce((prev, next) => parseInt( prev ) + parseInt( next ) )
             return bytes
         },
+        migrateCommand() {
+            if ( this.backup_token == '' || this.files_progress.copied != this.files_progress.total ) {
+                return ""
+            }
+            command = `curl -s https://disembark.host/generate-zip | bash -s -- --url="${this.site_url}" \\
+--token="${this.token}" --backup-token="${this.backup_token}" --cleanup`
+            return command
+        }
     }
 })
 </script>
