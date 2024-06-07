@@ -6,7 +6,7 @@
     <v-card-text>
     <v-row>
         <v-col cols="12" class="py-0">
-          <v-text-field v-model="site_url" label="Site URL" hide-details spellcheck="false"></v-text-field>
+          <v-text-field v-model="site_url" label="Site URL" hide-details spellcheck="false" @paste.prevent="checkUrl"></v-text-field>
         </v-col>
         <v-col cols="12" class="py-0">
             <v-row>
@@ -172,19 +172,33 @@ new Vue({
                     }
                 })
         },
+        checkUrl( event ) {
+            new_url = event.clipboardData.getData('text')
+            if ( new_url.includes( "\n" ) ) {
+                // attempt to split
+                parts = new_url.split("\n")
+                if ( parts.length == 2 ) {
+                    this.site_url = parts[0]
+                    this.token = parts[1]
+                }
+            } else {
+                this.site_url = new_url
+            }
+        },
         connect() {
+            this.site_url = this.site_url.replace(/\/$/, "")
             this.snackbar.message = `Analyzing ${this.site_url}.`
-			this.snackbar.show = true
+            this.snackbar.show = true
             axios.post( '/wp-json/disembark/v1/remote/connect', {
-				site_url: this.site_url,
+                site_url: this.site_url,
                 token: this.token
-			})
-			.then( response => {
-				if ( response.data == "" ) {
-					this.snackbar.message = `Could not connect to ${this.site_url}. Verify token or WordPress login.`
-				    this.snackbar.show = true
-					return
-				}
+            })
+            .then( response => {
+                if ( response.data == "" ) {
+                    this.snackbar.message = `Could not connect to ${this.site_url}. Verify token or WordPress login.`
+                    this.snackbar.show = true
+                    return
+            }
                 this.database = response.data.database
                 this.database_progress.total = this.database.length
                 this.backup_token = response.data.token
