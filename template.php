@@ -102,8 +102,8 @@ new Vue({
     el: '#app',
     vuetify: new Vuetify(),
     data: {
-        site_url: "",
-        token: "",
+        site_url: "<?php echo $_GET['disembark_site_url']; ?>",
+        token: "<?php echo $_GET['disembark_token']; ?>",
         backup_token: "",
 		snackbar: { show: false, message: "" },
         use_token: true,
