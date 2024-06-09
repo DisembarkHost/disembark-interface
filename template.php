@@ -9,17 +9,16 @@
           <v-text-field v-model="site_url" label="Site URL" hide-details spellcheck="false" @paste.prevent="checkUrl"></v-text-field>
         </v-col>
         <v-col cols="12" class="py-0">
-            <v-row>
-                <v-col cols="4"><v-checkbox v-model="use_token" readonly><template v-slot:label><div>Use token? 
-                <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                    <a href="https://github.com/DisembarkHost/disembark-connector/releases" target="_blank"><v-icon @click.stop v-on="on">mdi-information</v-icon></a>
-                </template>
-                <span>Download Disembark Connector required for token connection.</span>
+            <v-text-field label="Token" spellcheck="false" v-show="use_token" v-model="token" class="token">
+                <template v-slot:append-outer>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <a href="https://github.com/DisembarkHost/disembark-connector/releases/latest/download/disembark-connector.zip" target="_blank"><v-icon @click.stop v-on="on">mdi-open-in-new</v-icon></a>
+                    </template>
+                    <span>Download Disembark Connector required for token connection.</span>
                 </v-tooltip>
-                </div></template></v-checkbox></v-col>
-                <v-col cols="8"><v-text-field label="Token" spellcheck="false" v-show="use_token" v-model="token" class="token"></v-text-field></v-col>
-            </v-row>
+                </template>
+            </v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="6" class="py-0" v-show="! use_token">
           <v-text-field label="Username" spellcheck="false"></v-text-field>
