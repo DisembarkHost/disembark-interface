@@ -85,7 +85,7 @@
         </v-col>
     </v-row>
     </v-container>
-    <v-snackbar :timeout="3000" :multi-line="true" v-model="snackbar.show" style="z-index: 9999999;" color="var(--theme-palette-color-2)">
+    <v-snackbar :timeout="3000" :multi-line="true" v-model="snackbar.show" outlined style="z-index: 9999999;" color="var(--theme-palette-color-2)">
         {{ snackbar.message }}
         <v-btn dark text @click.native="snackbar.show = false">Close</v-btn>
     </v-snackbar>
