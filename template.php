@@ -30,6 +30,13 @@
             <v-btn block color="var(--theme-palette-color-4)" dark @click="connect()">Begin Backup Snapshot <v-icon class="ml-2">mdi-cloud-download</v-icon></v-btn>
         </v-col>
     </v-row>
+    <v-overlay absolute :value="loading" opacity="0.7">
+        <div class="text-center">
+            <div><strong>Backup in progress...</strong></div>
+            <v-progress-circular indeterminate color="white" class="my-5" :size="20" :width="2"></v-progress-circular>
+            <div>Refreshing this page will cancel the current backup.</div>
+        </div>
+    </v-overlay>
     </v-card-text>
     </v-card>
     <div style="opacity:0;"><textarea id="clipboard" style="height:1px;width:10px;display:flex;cursor:default"></textarea></div>
@@ -49,7 +56,7 @@
             <v-spacer></v-spacer>
             {{ totalDatabaseSize | formatSize }}
         </v-toolbar>
-        <v-progress-linear v-model="databaseProgress" color="amber" height="25">
+        <v-progress-linear :value="databaseProgress" color="amber" height="25">
             Copied {{ database_progress.copied }} of {{ database.length }} tables
         </v-progress-linear>
         <v-simple-table dense>
@@ -79,7 +86,7 @@
             <v-spacer></v-spacer>
             {{ files_total | formatSize }}
         </v-toolbar>
-        <v-progress-linear v-model="filesProgress" color="amber" height="25">
+        <v-progress-linear :value="filesProgress" color="amber" height="25">
         Copied {{ files_progress.copied | formatLargeNumbers }} of {{ files_progress.total | formatLargeNumbers }}
         </v-progress-linear>
         </v-col>
@@ -104,6 +111,7 @@ new Vue({
         site_url: "<?php echo $_GET['disembark_site_url']; ?>",
         token: "<?php echo $_GET['disembark_token']; ?>",
         backup_token: "",
+        loading: false,
 		snackbar: { show: false, message: "" },
         use_token: true,
         database_progress: { copied: 0, total: 0 },
@@ -116,6 +124,7 @@ new Vue({
     methods: {
         backupFiles() {
             if ( this.files_progress.copied == this.files_progress.total ) {
+                this.loading = false
                 return
             }
             file = this.files[ this.backup_progress.copied ]
@@ -128,6 +137,7 @@ new Vue({
                 if ( response.data == "" ) {
                     this.snackbar.message = `Could not zip ${file.name}.`
                     this.snackbar.show = true
+                    this.loading = false
                     return
                 }
                 this.files_progress.copied = this.files_progress.copied + file.count
@@ -152,6 +162,7 @@ new Vue({
                 if ( response.data == "" ) {
                     this.snackbar.message = `Could not backup table ${table}.`
                     this.snackbar.show = true
+                    this.loading = false
                     return
                 }
                 this.database_progress.copied = this.database_progress.copied + 1
@@ -172,7 +183,7 @@ new Vue({
                 })
         },
         checkUrl( event ) {
-            new_url = event.clipboardData.getData('text')
+            new_url = event.clipboardData.getData('text').trim()
             if ( new_url.includes( "\n" ) ) {
                 // attempt to split
                 parts = new_url.split("\n")
@@ -185,6 +196,12 @@ new Vue({
             }
         },
         connect() {
+            this.database_progress = { copied: 0, total: 0 }
+            this.files_progress = { copied: 0, total: 0 }
+            this.backup_progress = { copied: 0, total: 0 }
+            this.database = []
+            this.files = []
+            this.files_total = 0
             if ( this.site_url == "" ) {
                 this.snackbar.message = `Please enter a site URL.`
                 this.snackbar.show = true
@@ -198,8 +215,9 @@ new Vue({
             if ( ! this.site_url.includes("http://") && ! this.site_url.includes("https://") ) {
                 this.site_url = "https://" + this.site_url
             }
+            this.loading = true
             this.site_url = this.site_url.replace(/\/$/, "")
-            this.snackbar.message = `Analyzing ${this.site_url}.`
+            this.snackbar.message = `Analyzing ${this.site_url}`
             this.snackbar.show = true
             axios.post( '/wp-json/disembark/v1/remote/connect', {
                 site_url: this.site_url,
