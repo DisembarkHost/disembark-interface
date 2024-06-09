@@ -65,6 +65,15 @@ class Run {
         ];
         $backup_token = substr( bin2hex( random_bytes( 20 ) ), 0, -24);
         $response = wp_remote_get( "$site_url/wp-json/disembark/v1/database?token=$token&backup_token=$backup_token", $args );
+        if ( is_wp_error( $response ) ) {
+            $error_message = $response->get_error_message();
+            return [
+                "error" => $error_message
+            ];
+        }
+        if ($response["response"]["code"] != 200) {
+            return $response["response"]["code"];
+        }
         $database = json_decode( $response["body"] );
         $response = wp_remote_get( "$site_url/wp-json/disembark/v1/files?token=$token&backup_token=$backup_token", $args );
         $files    = json_decode( $response["body"] );

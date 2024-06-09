@@ -185,6 +185,19 @@ new Vue({
             }
         },
         connect() {
+            if ( this.site_url == "" ) {
+                this.snackbar.message = `Please enter a site URL.`
+                this.snackbar.show = true
+                return
+            }
+            if ( this.token == "" ) {
+                this.snackbar.message = `Please enter a token.`
+                this.snackbar.show = true
+                return
+            }
+            if ( ! this.site_url.includes("http://") && ! this.site_url.includes("https://") ) {
+                this.site_url = "https://" + this.site_url
+            }
             this.site_url = this.site_url.replace(/\/$/, "")
             this.snackbar.message = `Analyzing ${this.site_url}.`
             this.snackbar.show = true
@@ -193,11 +206,18 @@ new Vue({
                 token: this.token
             })
             .then( response => {
-                if ( response.data == "" ) {
+                if ( response.data == "" || response.data == "404" || response.data == "403" ) {
                     this.snackbar.message = `Could not connect to ${this.site_url}. Verify token or WordPress login.`
                     this.snackbar.show = true
+                    this.loading = false
                     return
-            }
+                }
+                if ( response.data.error && response.data.error != "" ) {
+                    this.snackbar.message = `Could not connect to ${this.site_url}. ${response.data.error}`
+                    this.snackbar.show = true
+                    this.loading = false
+                    return
+                }
                 this.database = response.data.database
                 this.database_progress.total = this.database.length
                 this.backup_token = response.data.token
