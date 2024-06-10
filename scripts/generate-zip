@@ -79,7 +79,7 @@ run_command() {
     done
     mkdir public
     mkdir database
-    for file in files-*.zip; do
+    for file in $(ls files-*.zip | sort -V); do
         echo "Extracting from $file"
         unzip -q $file -d public/
     done
@@ -87,7 +87,7 @@ run_command() {
     echo '/*!40101 SET NAMES utf8 */;' > public/database-$temp_directory.sql
     echo "SET sql_mode='NO_AUTO_VALUE_ON_ZERO';" >> public/database-$temp_directory.sql
 
-    cat database/*sql >> public/database-$temp_directory.sql
+    cat $(ls database/*sql | sort -V) >> public/database-$temp_directory.sql
     echo "Generating $temp_directory-$domain.zip"
     zip -qr $temp_directory-$domain.zip public
     mv $temp_directory-$domain.zip ../
