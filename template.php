@@ -73,7 +73,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in database" :key="item.table">
-                <td>{{ item.table }}</td>
+                <td>{{ item.table }} <span v-if="item.parts">({{ item.current }}/{{ item.parts }})</span> <v-progress-circular indeterminate color="primary" class="ml-3" :size="20" :width="2" v-show="item.running"></v-progress-circular></td>
                 <td>{{ item.size | formatSize }}</td>
                 </tr>
             </tbody>
@@ -146,26 +146,39 @@ new Vue({
             })
         },
         backupDatabase() {
-            tables = this.database.map( item => item.table )
             if ( this.database_progress.copied == this.database_progress.total ) {
                 this.zipDatabase()
                 this.backupFiles()
                 return
             }
-            table = tables[ this.database_progress.copied ]
-            axios.post( '/wp-json/disembark/v1/remote/export-database', {
+            table = this.database[ this.database_progress.copied ]
+            table.running = true
+            data = {
                 site_url: this.site_url,
                 token: this.token,
                 backup_token: this.backup_token,
-                table: table
-            }).then( response => {
+                table: table.table
+            }
+            if ( table.parts ) {
+                table.current = table.current + 1
+                data.parts = table.current
+                data.rows_per_part = table.rows_per_part
+            }
+            axios.post( '/wp-json/disembark/v1/remote/export-database', data).then( response => {
                 if ( response.data == "" ) {
-                    this.snackbar.message = `Could not backup table ${table}.`
+                    this.snackbar.message = `Could not backup table ${table.table}.`
                     this.snackbar.show = true
                     this.loading = false
+                    table.running = false
+                    return
+                }
+                if ( table.parts && table.current != table.parts ) {
+                    table.running = false
+                    this.backupDatabase()
                     return
                 }
                 this.database_progress.copied = this.database_progress.copied + 1
+                table.running = false
                 this.backupDatabase()
             })
         },

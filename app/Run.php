@@ -77,6 +77,18 @@ class Run {
         $database = json_decode( $response["body"] );
         $response = wp_remote_get( "$site_url/wp-json/disembark/v1/files?token=$token&backup_token=$backup_token", $args );
         $files    = json_decode( $response["body"] );
+
+        // Split up large database tables (> 200 MB) into smaller parts
+        $max_size = "209715200";
+        foreach ($database as $table) {
+            $table->running = false;
+            if ( $table->size > $max_size ) {
+                $parts = ceil( $table->size / $max_size );
+                $table->parts = $parts;
+                $table->current = 0;
+                $table->rows_per_part = ceil( $table->row_count / $parts );
+            }
+        }
         
         return [
             "token"    => $backup_token,
@@ -86,9 +98,11 @@ class Run {
     }
 
     function export_database ( $request ) {
-        $site_url = $request["site_url"];
-        $token    = $request["token"];
-        $table    = $request["table"];
+        $site_url      = $request["site_url"];
+        $token         = $request["token"];
+        $table         = $request["table"];
+        $parts         = empty( $request["parts"] ) ? "" : $request["parts"];
+        $rows_per_part = empty( $request["rows_per_part"] ) ? "" : $request["rows_per_part"];
         if ( empty( $site_url ) ||  empty( $token ) || empty( $table ) ) {
             return;
         }
@@ -105,6 +119,15 @@ class Run {
 			'method'      => 'POST', 
 			'data_format' => 'body' 
 		];
+        if ( !empty( $parts ) && !empty( $rows_per_part ) ) {
+            $data["body"] = json_encode( [
+                "site_url"      => $site_url,
+                "token"         => $token, 
+                "backup_token"  => $request["backup_token"],
+                "parts"         => $parts,
+                "rows_per_part" => $rows_per_part
+            ] );
+        }
         $response = wp_remote_post( "$site_url/wp-json/disembark/v1/export/database/$table", $data );
         return json_decode( $response["body"] );
     }
