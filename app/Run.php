@@ -134,10 +134,11 @@ class Run {
     }
 
     function zip_files ( $request ) {
-        $site_url = $request["site_url"];
-        $token    = $request["token"];
-        $file     = $request["file"];
-        if ( empty( $site_url ) ||  empty( $token ) || empty( $file ) ) {
+        $site_url      = $request["site_url"];
+        $token         = $request["token"];
+        $file          = $request["file"];
+        $include_file  = empty( $request["include_file"] ) ? "" : $request["include_file"];
+        if ( empty( $site_url ) || empty( $token ) && ( empty( $file ) || empty( $include_file ) ) ) {
             return;
         }
         $data = [
@@ -154,6 +155,14 @@ class Run {
 			'method'      => 'POST', 
 			'data_format' => 'body' 
 		];
+        if ( ! empty( $include_file ) ) {
+            $data["body"] = json_encode( [
+                "site_url"      => $site_url,
+                "token"         => $token, 
+                "backup_token"  => $request["backup_token"],
+                "include_file"  => $include_file
+            ] );
+        }
         $response = wp_remote_post( "$site_url/wp-json/disembark/v1/zip-files", $data );
         return json_decode( $response["body"] );
     }
