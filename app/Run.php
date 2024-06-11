@@ -82,6 +82,7 @@ class Run {
         $max_size = "209715200";
         foreach ($database as $table) {
             $table->running = false;
+            $table->done    = false;
             if ( $table->size > $max_size ) {
                 $parts = ceil( $table->size / $max_size );
                 $table->parts = $parts;

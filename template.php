@@ -179,6 +179,7 @@ new Vue({
                 }
                 this.database_progress.copied = this.database_progress.copied + 1
                 table.running = false
+                table.done    = true
                 this.backupDatabase()
             })
         },
