@@ -357,6 +357,9 @@ new Vue({
     },
     mounted() {
         this.$vuetify.theme.themes.light.primary = getComputedStyle(document.documentElement).getPropertyValue('--theme-palette-color-2');
+        if ( this.site_url != "" && this.token != "" ) {
+            this.connect()
+        }
     },
     filters: {
         formatLargeNumbers: function (number) {
