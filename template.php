@@ -2,14 +2,14 @@
 <v-app style="background:transparent">
     <v-main>
     <v-container>
-    <v-card style="max-width: 600px; margin: 0px auto 20px auto;" class="pa-3">
+    <v-card style="max-width: 600px; margin: 0px auto 20px auto;position:relative" class="pa-3">
     <v-card-text>
     <v-row>
         <v-col cols="12" class="py-0">
-          <v-text-field v-model="site_url" label="Site URL" hide-details spellcheck="false" @paste.prevent="checkUrl"></v-text-field>
+          <v-text-field v-model="site_url" variant="underlined" spellcheck="false" label="Site URL" hide-details @paste.prevent="checkUrl"></v-text-field>
         </v-col>
         <v-col cols="12" class="py-0">
-            <v-text-field label="Token" spellcheck="false" v-show="use_token" v-model="token" class="token">
+            <v-text-field label="Token" variant="underlined" spellcheck="false" v-show="use_token" v-model="token" class="token">
                 <template v-slot:append-outer>
                 <v-tooltip top>
                     <template v-slot:activator="{ on }">
@@ -29,56 +29,54 @@
         <v-col cols="12" class="py-0">
         <v-row>
             <v-col cols="12" sm="4" md="4">
-                <v-switch v-model="advanced" inset :ripple="false" label="Options" @change="advanced == true && connect()"></v-switch>
+                <v-switch v-model="advanced" density="compact" inset :ripple="false" label="Options" @change="advanced == true && connect()"></v-switch>
             </v-col>
             <v-col cols="12" sm="4" md="4" v-show="advanced">
-                <v-switch v-model="options.database" inset :ripple="false" label="Database"></v-switch>
+                <v-switch v-model="options.database" density="compact" inset :ripple="false" label="Database"></v-switch>
             </v-col>
             <v-col cols="12" sm="4" md="4" v-show="advanced">
-                <v-switch v-model="options.files" inset :ripple="false" label="Files"></v-switch>
+                <v-switch v-model="options.files" density="compact" inset :ripple="false" label="Files"></v-switch>
             </v-col>
             <v-col cols="12" sm="12" md="12" v-show="advanced && ! options.files" class="pt-0 mt-0">
-                <v-text-field v-model="options.include_files" label="Include files or paths" hint="Comma separated list of files or paths to include" persistent-hint spellcheck="false" class="pt-0 mt-0"></v-text-field>
+                <v-text-field v-model="options.include_files" variant="underlined" label="Include files or paths" hint="Comma separated list of files or paths to include" persistent-hint spellcheck="false" class="pt-0 mt-0"></v-text-field>
             </v-col>
             <v-col cols="12" sm="12" md="12" v-show="advanced && ! options.database" class="pt-0 mt-0">
-                <v-text-field v-model="options.include_database_tables" label="Include database tables" hint="Comma separated list of database tables to include" persistent-hint spellcheck="false" class="pt-0 mt-0"></v-text-field>
+                <v-text-field v-model="options.include_database_tables" variant="underlined" label="Include database tables" hint="Comma separated list of database tables to include" persistent-hint spellcheck="false" class="pt-0 mt-0"></v-text-field>
             </v-col>
         </v-row>
         </v-col>
         <v-col cols="12">
-            <v-btn block color="var(--theme-palette-color-4)" dark @click="connect( true )">Begin Backup Snapshot <v-icon class="ml-2">mdi-cloud-download</v-icon></v-btn>
+            <v-btn block color="var(--theme-palette-color-4)" class="text-white" @click="connect( true )">Begin Backup Snapshot <v-icon class="ml-2">mdi-cloud-download</v-icon></v-btn>
         </v-col>
     </v-row>
-    <v-overlay absolute :value="loading" opacity="0.7">
-        <div class="text-center">
+    </v-card-text>
+    <v-overlay v-model="loading" opacity="0.7" contained class="align-center justify-center">
+        <div class="text-center text-white text-body-1">
             <div><strong>Backup in progress...</strong></div>
-            <v-progress-circular indeterminate color="white" class="my-5" :size="20" :width="2"></v-progress-circular>
+            <v-progress-circular indeterminate color="white" class="my-5" :size="32" :width="2"></v-progress-circular>
             <div>Refreshing this page will cancel the current backup.</div>
         </div>
     </v-overlay>
-    </v-card-text>
     </v-card>
     <div style="opacity:0;"><textarea id="clipboard" style="height:1px;width:10px;display:flex;cursor:default"></textarea></div>
-    <v-alert outlined type="success" text v-if="migrateCommand">
+    <v-alert variant="outlined" type="success" text v-if="migrateCommand" class="mb-4">
       Backup is ready. You can generate a zip file locally use the following commands in your terminal.
         <pre style="font-size: 11px;color: var(--theme-palette-color-1);margin: 14px 14px 0px 0px;background: var(--theme-palette-color-2);">{{ migrateCommand }}</pre>
         <div style="position:relative">
-            <v-btn small icon @click="copyText( migrateCommand )" absolute right style="top:-36px" class="mr-2">
-                <v-icon color="var(--theme-palette-color-1)">mdi-content-copy</v-icon> 
-            </v-btn>
+            <v-btn variant="text" icon="mdi-content-copy" @click="copyText( migrateCommand )" position="absolute" style="bottom: 0px;right: 12px;" class="mr-2" color="var(--theme-palette-color-1)"></v-btn>
         </div>
     </v-alert>
     <v-row>
         <v-col cols="12" sm="12" md="6" v-if="database.length > 0">
-        <v-toolbar flat dark dense color="var(--theme-palette-color-2)">
+        <v-toolbar flat dark density="compact" color="var(--theme-palette-color-2)" class="text-white pr-5">
             <v-toolbar-title>Database</v-toolbar-title>
             <v-spacer></v-spacer>
-            {{ totalDatabaseSize | formatSize }}
+            {{ formatSize(totalDatabaseSize) }}
         </v-toolbar>
-        <v-progress-linear :value="databaseProgress" color="amber" height="25">
+        <v-progress-linear v-model="databaseProgress" color="amber" height="25">
             Copied {{ database_progress.copied }} of {{ database.length }} tables
         </v-progress-linear>
-        <v-simple-table dense>
+        <v-table density="compact">
             <template v-slot:default>
             <thead>
                 <tr>
@@ -93,60 +91,63 @@
             <tbody>
                 <tr v-for="item in database" :key="item.table">
                 <td><v-icon v-show="item.done" class="mr-2">mdi-check-circle</v-icon>{{ item.table }} <span v-if="item.parts">({{ item.current }}/{{ item.parts }})</span> <v-progress-circular indeterminate color="primary" class="ml-3" :size="20" :width="2" v-show="item.running"></v-progress-circular></td>
-                <td>{{ item.size | formatSize }}</td>
+                <td>{{ formatSize( item.size ) }}</td>
                 </tr>
             </tbody>
             </template>
-        </v-simple-table>
+        </v-table>
         </v-col>
         <v-col cols="12" sm="12" md="6" v-if="files.length > 0">
-        <v-toolbar flat dark dense color="var(--theme-palette-color-2)">
+        <v-toolbar flat dark density="compact" color="var(--theme-palette-color-2)" class="text-white pr-5">
             <v-toolbar-title>Files</v-toolbar-title>
             <v-spacer></v-spacer>
-            {{ files_total | formatSize }}
+            {{ formatSize( files_total ) }}
         </v-toolbar>
-        <v-progress-linear :value="filesProgress" color="amber" height="25">
-        Copied {{ files_progress.copied | formatLargeNumbers }} of {{ totalFileCount | formatLargeNumbers }}
+        <v-progress-linear v-model="filesProgress" color="amber" height="25">
+        Copied {{ formatLargeNumbers( files_progress.copied ) }} of {{ formatLargeNumbers ( totalFileCount ) }}
         </v-progress-linear>
         </v-col>
     </v-row>
     </v-container>
-    <v-snackbar :timeout="3000" :multi-line="true" v-model="snackbar.show" outlined style="z-index: 9999999;" color="var(--theme-palette-color-2)">
+    <v-snackbar :timeout="3000" :multi-line="true" v-model="snackbar.show" variant="outlined" style="z-index: 9999999;" color="var(--theme-palette-color-2)">
         {{ snackbar.message }}
-        <v-btn dark text @click.native="snackbar.show = false">Close</v-btn>
     </v-snackbar>
     </v-main>
 </v-app>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vuetify@2.7.2/dist/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.30/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@v3.6.10/dist/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@1.7.2/dist/axios.min.js"></script>
 <script>
-new Vue({
-    el: '#app',
-    vuetify: new Vuetify(),
-    data: {
-        advanced: false,
-        options: {
-            database: true,
-            files: true,
-            include_files: "",
-            include_database_tables: ""
-        },
-        site_url: "<?php echo $_GET['disembark_site_url']; ?>",
-        token: "<?php echo $_GET['disembark_token']; ?>",
-        backup_token: "",
-        loading: false,
-		snackbar: { show: false, message: "" },
-        use_token: true,
-        database_progress: { copied: 0, total: 0 },
-        files_progress: { copied: 0, total: 0 },
-        backup_progress: { copied: 0, total: 0 },
-        backup_ready: false,
-		database: [],
-        files: [],
-        files_total: 0
+const { createApp } = Vue;
+const { createVuetify } = Vuetify;
+const vuetify = createVuetify();
+
+createApp({
+    data() {
+        return {
+            advanced: false,
+            options: {
+                database: true,
+                files: true,
+                include_files: "",
+                include_database_tables: ""
+            },
+            site_url: "<?php echo $_GET['disembark_site_url']; ?>",
+            token: "<?php echo $_GET['disembark_token']; ?>",
+            backup_token: "",
+            loading: false,
+            snackbar: { show: false, message: "" },
+            use_token: true,
+            database_progress: { copied: 0, total: 0 },
+            files_progress: { copied: 0, total: 0 },
+            backup_progress: { copied: 0, total: 0 },
+            backup_ready: false,
+            database: [],
+            files: [],
+            files_total: 0
+        }
     },
     methods: {
         backupFiles() {
@@ -354,22 +355,10 @@ new Vue({
             this.snackbar.message = "Copied to clipboard.";
             this.snackbar.show = true;
         },
-    },
-    mounted() {
-        this.$vuetify.theme.themes.light.primary = getComputedStyle(document.documentElement).getPropertyValue('--theme-palette-color-2');
-        if ( this.site_url != "" && this.token != "" ) {
-            this.connect()
-        }
-    },
-    filters: {
-        formatLargeNumbers: function (number) {
-            if ( isNaN(number) || number == null ) {
-                return null;
-            } else {
-                return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        formatSize (fileSizeInBytes) {
+            if ( fileSizeInBytes == null || typeof fileSizeInBytes !== 'number' ) {
+                return 0;
             }
-        },
-        formatSize: function (fileSizeInBytes) {
             var i = -1;
             var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
             do {
@@ -378,6 +367,19 @@ new Vue({
             } while (fileSizeInBytes > 1024);
             return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
         },
+        formatLargeNumbers (number) {
+            if ( isNaN(number) || number == null ) {
+                return null;
+            } else {
+                return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            }
+        },
+    },
+    mounted() {
+        this.$vuetify.theme.themes.light.primary = getComputedStyle(document.documentElement).getPropertyValue('--theme-palette-color-2');
+        if ( this.site_url != "" && this.token != "" ) {
+            this.connect()
+        }
     },
     computed: {
         filesProgress() {
@@ -402,5 +404,5 @@ new Vue({
             return command
         }
     }
-})
+}).use(vuetify).mount('#app');
 </script>

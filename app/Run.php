@@ -192,8 +192,8 @@ class Run {
 
     function disembark_connect_script() {
         wp_enqueue_style( 'vuejs-font', "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" );
-        wp_enqueue_style( 'vuejs-icons', "https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" );
-        wp_enqueue_style( 'vuetify', "https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" );
+        wp_enqueue_style( 'vuejs-icons', "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" );
+        wp_enqueue_style( 'vuetify', "https://cdn.jsdelivr.net/npm/vuetify@v3.6.10/dist/vuetify.min.css" );
         wp_enqueue_style( 'disembark', "{$this->plugin_url}/css/style.css" );
     }
 

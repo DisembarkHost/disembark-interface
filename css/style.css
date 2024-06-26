@@ -33,3 +33,22 @@ body {
 .token input[type=text] {
     font-size: 14px;
 }
+
+.v-overlay__content.v-snackbar__wrapper.v-theme--light.v-snackbar--variant-outlined {
+    background-color: #fff;
+}
+
+.v-alert {
+    background: #cee9e6;
+}
+
+.v-selection-control:not(.v-selection-control--dirty) .v-switch__track {
+    background-color: #cecece;
+}
+
+.v-switch--inset .v-switch__thumb {
+    transform: none;
+}
+.v-selection-control--dirty .v-switch__thumb {
+    background-color: var(--theme-palette-color-2);
+}
