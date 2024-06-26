@@ -248,9 +248,11 @@ createApp({
                     return
                 }
                 if ( table.parts && table.current != table.parts ) {
-                    table.running = false
-                    this.backupDatabase()
-                    return
+                    axios.post( '/wp-json/disembark/v1/remote/zip-database', data).then( response => {
+                        table.running = false
+                        this.backupDatabase()
+                        return
+                    })
                 }
                 this.database_progress.copied = this.database_progress.copied + 1
                 table.running = false
