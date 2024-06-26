@@ -188,6 +188,10 @@ createApp({
                 }
                 this.backup_progress.copied = this.backup_progress.copied + 1
                 this.backupFiles()
+            }).catch(error => {
+                this.snackbar.message = `Could not zip ${file.name}. Retrying...`
+                this.snackbar.show = true
+                this.backupFiles()
             })
         },
         backupDatabase() {
