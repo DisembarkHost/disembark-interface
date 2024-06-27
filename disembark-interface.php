@@ -10,7 +10,7 @@
  * Plugin Name:       Disembark Interface
  * Plugin URI:        https://disembark.host
  * Description:       Interface for Disembark backup service
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Austin Ginder
  * Author URI:        https://austinginder.com
  * License:           MIT
