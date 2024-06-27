@@ -1,0 +1,24 @@
+{
+    "name": "Disembark",
+    "slug": "disembark-interface",
+    "author": "<a href=\"https://austinginder.com\">Austin Ginder</a>",
+    "author_profile": "https://profiles.wordpress.org/austinginder",
+    "donate_link": "https://github.com/sponsors/austinginder",
+    "version": "1.1.0",
+    "download_url": "https://github.com/DisembarkHost/disembark-interface/releases/download/v1.1.0/disembark-interface.zip",
+    "requires": "5.6",
+    "tested": "6.5.5",
+    "requires_php": "5.6",
+    "added": "2024-06-05 16:00:00",
+    "last_updated": "2024-06-27 15:30:00",
+    "homepage": "https://disembark.host",
+    "sections": {
+    "description": "Interface plugin for <a href=\"https://disembark.host\">Disembark</a>.",
+    "installation": "",
+    "changelog": ""
+    },
+    "banners": {
+        "low": "https://disembark.host/images/disembark-772x250.webp",
+        "high": "https://disembark.host/images/disembark-1544x500.webp"
+    }
+}

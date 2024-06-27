@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'DisembarkInterface\\Run' => $baseDir . '/app/Run.php',
+    'DisembarkInterface\\Updater' => $baseDir . '/app/Updater.php',
 );

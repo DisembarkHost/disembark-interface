@@ -26,3 +26,4 @@ if ( ! defined( 'WPINC' ) ) {
 
 require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 new DisembarkInterface\Run();
+new DisembarkInterface\Updater();
