@@ -360,7 +360,7 @@ createApp({
             this.snackbar.show = true;
         },
         formatSize (fileSizeInBytes) {
-            if ( fileSizeInBytes == null || typeof fileSizeInBytes !== 'number' ) {
+            if ( fileSizeInBytes == null ) {
                 return 0;
             }
             var i = -1;
