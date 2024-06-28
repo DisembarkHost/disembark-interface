@@ -10,13 +10,11 @@
         </v-col>
         <v-col cols="12" class="py-0">
             <v-text-field label="Token" variant="underlined" spellcheck="false" v-show="use_token" v-model="token" class="token">
-                <template v-slot:append-outer>
-                <v-tooltip top>
-                    <template v-slot:activator="{ on }">
-                        <a href="https://github.com/DisembarkHost/disembark-connector/releases/latest/download/disembark-connector.zip" target="_blank"><v-icon @click.stop v-on="on">mdi-open-in-new</v-icon></a>
-                    </template>
-                    <span>Download Disembark Connector required for token connection.</span>
-                </v-tooltip>
+                <template v-slot:append>
+                    <a href="https://github.com/DisembarkHost/disembark-connector/releases/latest/download/disembark-connector.zip" target="_blank">
+                        <v-icon @click.stop v-on="on">mdi-open-in-new</v-icon>
+                        <v-tooltip location="top" activator="parent" text="Download Disembark Connector required for token connection."></v-tooltip>
+                    </a>
                 </template>
             </v-text-field>
         </v-col>
