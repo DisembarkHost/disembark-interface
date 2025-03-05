@@ -60,6 +60,7 @@ domain=${url/http:\/\/www./}     # removes http://www.
 domain=${domain/https:\/\/www./} # removes https://www.
 domain=${domain/http:\/\//}      # removes https://
 domain=${domain/https:\/\//}     # removes http://
+domain=${domain//\//_}           # replaces / with _
 
 # Store current path
 home_directory=$(pwd)
@@ -72,14 +73,14 @@ run_command() {
     fi
     mkdir $temp_directory
     cd $temp_directory
-    files=$( curl -sX GET "$url/wp-json/disembark/v1/download?token=$token&backup_token=$backup_token" )
+    files=$( curl --insecure -sX GET "$url/wp-json/disembark/v1/download?token=$token&backup_token=$backup_token" )
     if [[ "$files" == "" ]]; then 
         echo "No files found. Check your URL and token."
         return
     fi
     for file in ${files}; do
         echo "Downloading $file to $temp_directory"
-        wget -q --show-progress $file
+        curl --insecure -# -O $file
     done
     mkdir public
     mkdir database
@@ -113,10 +114,11 @@ run_command() {
     if [ -d "$temp_directory" ]; then
         rm -rf "$temp_directory"
     fi
-    echo "$temp_directory-$domain.zip is ready"
     if [[ "$cleanup" == "true" ]]; then
         echo "Cleaning up Disembark backups on $url"
-        curl -sX GET "$url/wp-json/disembark/v1/cleanup?token=$token"
+        curl --insecure -sX GET "$url/wp-json/disembark/v1/cleanup?token=$token"
     fi
+    echo ""
+    echo "$temp_directory-$domain.zip is ready"
 }
 run_command
