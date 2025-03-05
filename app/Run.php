@@ -118,7 +118,8 @@ class Run {
                 "backup_token" => $request["backup_token"]
             ] ), 
 			'method'      => 'POST', 
-			'data_format' => 'body' 
+            'data_format' => 'body',
+            'sslverify'   => false
 		];
         if ( !empty( $parts ) && !empty( $rows_per_part ) ) {
             $data["body"] = json_encode( [
@@ -153,7 +154,8 @@ class Run {
                 "file"         => $file
             ] ), 
 			'method'      => 'POST', 
-			'data_format' => 'body' 
+			'data_format' => 'body',
+            'sslverify'   => false
 		];
         if ( ! empty( $include_file ) ) {
             $data["body"] = json_encode( [
@@ -184,7 +186,8 @@ class Run {
                 "backup_token" => $request["backup_token"]
             ] ), 
 			'method'      => 'POST', 
-			'data_format' => 'body' 
+			'data_format' => 'body',
+            'sslverify'   => false
 		];
         $response = wp_remote_post( "$site_url/wp-json/disembark/v1/zip-database", $data );
         return json_decode( $response["body"] );
