@@ -55,6 +55,12 @@
             <div>Refreshing this page will cancel the current backup.</div>
         </div>
     </v-overlay>
+    <v-overlay v-model="analyzing" opacity="0.7" contained class="align-center justify-center">
+        <div class="text-center text-white text-body-1">
+            <div><strong>Analyzing...</strong></div>
+            <v-progress-circular indeterminate color="white" class="my-5" :size="32" :width="2"></v-progress-circular>
+        </div>
+    </v-overlay>
     </v-card>
     <div style="opacity:0;"><textarea id="clipboard" style="height:1px;width:10px;display:flex;cursor:default"></textarea></div>
     <v-alert variant="outlined" type="success" text v-if="migrateCommand" class="mb-4">
@@ -136,6 +142,7 @@ createApp({
             token: "<?php echo $_GET['disembark_token']; ?>",
             backup_token: "",
             loading: false,
+            analyzing: false,
             snackbar: { show: false, message: "" },
             use_token: true,
             database_progress: { copied: 0, total: 0 },
@@ -316,8 +323,6 @@ createApp({
                 this.loading = true 
             }
             this.site_url = this.site_url.replace(/\/$/, "")
-            this.snackbar.message = `Analyzing ${this.site_url}`
-            this.snackbar.show = true
             axios.post( '/wp-json/disembark/v1/remote/connect', {
                 site_url: this.site_url,
                 token: this.token
@@ -327,14 +332,17 @@ createApp({
                     this.snackbar.message = `Could not connect to ${this.site_url}. Verify token or WordPress login.`
                     this.snackbar.show = true
                     this.loading = false
+                    this.analyzing = false
                     return
                 }
                 if ( response.data.error && response.data.error != "" ) {
                     this.snackbar.message = `Could not connect to ${this.site_url}. ${response.data.error}`
                     this.snackbar.show = true
+                    this.analyzing = false
                     this.loading = false
                     return
                 }
+                this.analyzing = false
                 this.database = response.data.database
                 this.database_progress.total = this.database.length
                 this.backup_token = response.data.token
@@ -382,6 +390,7 @@ createApp({
     mounted() {
         this.$vuetify.theme.themes.light.primary = getComputedStyle(document.documentElement).getPropertyValue('--theme-palette-color-2');
         if ( this.site_url != "" && this.token != "" ) {
+            this.analyzing = true
             this.connect()
         }
     },
